@@ -1,5 +1,4 @@
 services:
-
   wordpress:
     image: wordpress
     restart: always
@@ -20,9 +19,23 @@ services:
       MYSQL_DATABASE: asaka_jsc
       MYSQL_USER: asaka_jsc
       MYSQL_PASSWORD: password
-      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+      MYSQL_RANDOM_ROOT_PASSWORD: "1"
     volumes:
       - db:/var/lib/mysql
+
+  node:
+    image: node:24-alpine
+    container_name: asaka_node
+    working_dir: /var/www/html/wp-content/themes/asaka-junior-sp
+    volumes:
+      - ./wordpress:/var/www/html
+    ports:
+      - "3000:3000" #BrowserSync表示用ポート
+      - "3001:3001" #BrowserSync UI用ポート
+    #起動時に依存関係をチェックし、開発サーバー（npm run dev）を実行
+    command: sh -c "npm install && npm run dev"
+    depends_on:
+      - wordpress
 
 volumes:
   db:
